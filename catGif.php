@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * 
  * The plugin bootstrap file
  *
  * This file is read by WordPress to generate the plugin information in the plugin
@@ -35,7 +36,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'PLUGIN_NAME_VERSION', '1.0.0' );
+define( 'PLUGIN_NAME_VERSION', '0.0.1' );
 
 /**
  * The code that runs during plugin activation.
@@ -73,32 +74,49 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-catGif.php';
  *
  * @since    1.0.0
  */
-function run_plugin_name() {
 
-	$plugin = new Plugin_Name();
-	$plugin->run();
+ // Allowing users to embed iframe objects in wordpress
+global $allowedtags;
+$allowedtags["iframe"] = array(
+   "src" => array(),
+   "height" => array(),
+   "width" => array(),
+   "frameBorder" => array(),
+   "class" => array(),
+   
+  );
 
-}
-run_plugin_name();
+// DISPLAY SEND GIF BUTTON
 
-function wporg_more_comments( $post_id ) {
+// TODO: Change func's logic to display "Send CatGif" button and link it to the gif
+// class that makes requests to giphy and retrieves gif ids and then passes it to another 
+// function below to display them
+function add_send_cat_gif_button( $post_id ) {
     echo '<p class="comment-form-more-comments"><label for="more-comments">' . __( 'More Comments', 'your-theme-text-domain' ) . '</label> <textarea id="more-comments" name="more-comments" cols="45" rows="8" aria-required="true"></textarea></p>';
 }
  
-add_action( 'comment_form', 'wporg_more_comments' );
+add_action( 'comment_form', 'add_send_cat_gif_button' );
 
-add_filter( 'preprocess_comment' , 'preprocess_comment_remove_url' );
 
-#https://developer.wordpress.org/reference/hooks/comment_text/
+// SEND GIF INSTEAD OF THE COMMENT
+$GIF_ID = "ICOgUNjpvO0PC"; // BzyTuYCmvSORqs1ABM
+$GIF_IFRAME_PATTERN = "<iframe src=\"https://giphy.com/embed/$GIF_ID\" width=\"480\" height=\"359\" frameBorder=\"0\" class=\"giphy-embed\" allowFullScreen></iframe>";
 
-function preprocess_comment_remove_url( $commentdata ) {
-   // Always remove the URL from the comment author's comment
-   unset( $commentdata['comment_author_url'] );
- 
-   // If the user is speaking in all caps, lowercase the comment
-   if( $commentdata['comment_content'] == strtoupper( $commentdata['comment_content'] ) ) {
-      $commentdata['comment_content'] = ucwords( strtolower( $commentdata['comment_content'] ) );
+// TODO: Transmit gif ids from the classes/functions that do requests to this function
+function send_gif_as_comment( $commentdata ) {
+   // NEEDS TO ADRESS A GLOBAL VARIABLE TO SEE IT
+   global $GIF_IFRAME_PATTERN;
+
+   // TODO: Change if condition to button 'Send CatGif' pressed or smth
+   if (str_contains($commentdata['comment_content'], "cat"))
+   {
+      $commentdata['comment_content'] = $GIF_IFRAME_PATTERN;
    }
- 
    return $commentdata;
 }
+add_filter( 'preprocess_comment' , 'send_gif_as_comment' );
+
+// DISABLE WORDPRESS FLOOD FILTER TO BE ABLE TO POST MORE COMMENTS MORE FREQUENTLY
+// AND POST SAME COMMENTS
+add_filter('comment_flood_filter', '__return_false');
+add_filter('duplicate_comment_id', '__return_false');
