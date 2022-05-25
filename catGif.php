@@ -91,14 +91,26 @@ $allowedtags["iframe"] = array(
 // TODO: Change func's logic to display "Send CatGif" button and link it to the gif
 // class that makes requests to giphy and retrieves gif ids and then passes it to another 
 // function below to display them
-function add_send_cat_gif_button( $post_id ) {
-    echo '<p class="comment-form-more-comments"><label for="more-comments">' . __( 'More Comments', 'your-theme-text-domain' ) . '</label> <textarea id="more-comments" name="more-comments" cols="45" rows="8" aria-required="true"></textarea></p>';
+
+function add_send_cat_gif_button( $args ) {
+   echo '<div class="form-submit">';
+   echo '<input name="catgif" type="submit" id="catgif" class="button button-primary" value="Send Cat Gif">';
+	echo '</div>';
 }
- 
+
 add_action( 'comment_form', 'add_send_cat_gif_button' );
 
 
-// SEND GIF INSTEAD OF THE COMMENT
+function search_for_cat_gif( $comment_content ){
+   global $GIF_IFRAME_PATTERN;
+
+   # TODO add gify API
+   //$GIF_ID = gify API($comment_content)
+   $GIF_ID = "BzyTuYCmvSORqs1ABM";
+   $GIF_IFRAME_PATTERN = "<iframe src=\"https://giphy.com/embed/$GIF_ID\" width=\"480\" height=\"359\" frameBorder=\"0\" class=\"giphy-embed\" allowFullScreen></iframe>";
+}
+
+// // SEND GIF INSTEAD OF THE COMMENT
 $GIF_ID = "ICOgUNjpvO0PC"; // BzyTuYCmvSORqs1ABM
 $GIF_IFRAME_PATTERN = "<iframe src=\"https://giphy.com/embed/$GIF_ID\" width=\"480\" height=\"359\" frameBorder=\"0\" class=\"giphy-embed\" allowFullScreen></iframe>";
 
@@ -108,12 +120,14 @@ function send_gif_as_comment( $commentdata ) {
    global $GIF_IFRAME_PATTERN;
 
    // TODO: Change if condition to button 'Send CatGif' pressed or smth
-   if (str_contains($commentdata['comment_content'], "cat"))
+   if (str_contains($commentdata['comment_content'], "cat") & (isset($_POST['catgif'])))
    {
+      search_for_cat_gif($commentdata['comment_content']);
       $commentdata['comment_content'] = $GIF_IFRAME_PATTERN;
    }
    return $commentdata;
 }
+
 add_filter( 'preprocess_comment' , 'send_gif_as_comment' );
 
 // DISABLE WORDPRESS FLOOD FILTER TO BE ABLE TO POST MORE COMMENTS MORE FREQUENTLY
