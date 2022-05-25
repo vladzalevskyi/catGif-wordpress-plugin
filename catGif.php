@@ -125,7 +125,6 @@ function search_for_cat_gif( $comment_content ){
    } catch (Exception $e) {
          echo 'Exception when calling DefaultApi->gifsSearchGet: ', $e->getMessage(), PHP_EOL;
    }
-   //$GIF_IFRAME_PATTERN = "<iframe src=\"https://giphy.com/embed/$GIF_ID\" width=\"480\" height=\"359\" frameBorder=\"0\" class=\"giphy-embed\" allowFullScreen></iframe>";
 }
 
 // // SEND GIF INSTEAD OF THE COMMENT
@@ -133,7 +132,6 @@ function search_for_cat_gif( $comment_content ){
 function send_gif_as_comment( $commentdata ) {
    // NEEDS TO ADRESS A GLOBAL VARIABLE TO SEE IT
    global $GIF_IFRAME_PATTERN;
-
    // TODO: Change if condition to button 'Send CatGif' pressed or smth
    if (str_contains($commentdata['comment_content'], "cat") & (isset($_POST['catgif'])))
    {
