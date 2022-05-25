@@ -112,6 +112,12 @@ function search_for_cat_gif( $comment_content ){
 
    # TODO add gify API
    try {    
+      $limit = 25; // int | The maximum number of records to return.
+      $offset = 0; // int | An optional results offset. Defaults to 0.
+      $rating = "g"; // string | Filters results by specified rating.
+      $lang = "en"; // string | Specify default country for regional content; use a 2-letter ISO 639-1 country code. See list of supported languages <a href = \"../language-support\">here</a>.
+      $fmt = "json"; // string | Used to indicate the expected response format. Default is Json.
+
       $result = $api_instance->gifsSearchGet($API_KEY, $comment_content, $limit, $offset, $rating, $lang, $fmt);
       $json_result = json_decode($result);
       $GIF_IFRAME_PATTERN = '<img src="' . $json_result->data[0]->images->downsized->url . '" width=\"480\" height=\"359\" frameBorder=\"0\" frameBorder=\"0\">';
