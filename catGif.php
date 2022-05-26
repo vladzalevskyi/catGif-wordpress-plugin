@@ -86,6 +86,8 @@ $allowedtags["iframe"] = array(
    
   );
 
+
+
 // DISPLAY SEND GIF BUTTON
 
 // TODO: Change func's logic to display "Send CatGif" button and link it to the gif
@@ -104,25 +106,40 @@ add_action( 'comment_form', 'add_send_cat_gif_button' );
 function search_for_cat_gif( $comment_content ){
    global $GIF_IFRAME_PATTERN;
 
-   # TODO add gify API
-   //$GIF_ID = gify API($comment_content)
-   $GIF_ID = "BzyTuYCmvSORqs1ABM";
-   $GIF_IFRAME_PATTERN = "<iframe src=\"https://giphy.com/embed/$GIF_ID\" width=\"480\" height=\"359\" frameBorder=\"0\" class=\"giphy-embed\" allowFullScreen></iframe>";
+   # path to the clone repo 
+   
+	require_once plugin_dir_path( __FILE__ ) . 'giphy-php-client/vendor/autoload.php';
+
+   $api_instance = new GPH\Api\DefaultApi();
+   $API_KEY = 'AsTZs872SKSwgyevUPQWgadXgxJwYKWJ';
+
+   
+   try {    
+      $limit = 25; // int | The maximum number of records to return.
+      $offset = 0; // int | An optional results offset. Defaults to 0.
+      $rating = "g"; // string | Filters results by specified rating.
+      $lang = "en"; // string | Specify default country for regional content; use a 2-letter ISO 639-1 country code. See list of supported languages <a href = \"../language-support\">here</a>.
+      $fmt = "json"; // string | Used to indicate the expected response format. Default is Json.
+
+      $result = $api_instance->gifsSearchGet($API_KEY, 'cat ' . $comment_content, $limit, $offset, $rating, $lang, $fmt);
+      $json_result = json_decode($result);
+      
+      return $json_result->data[0]->embed_url;
+   } catch (Exception $e) {
+         echo 'Exception when calling DefaultApi->gifsSearchGet: ', $e->getMessage(), PHP_EOL;
+   }
 }
 
 // // SEND GIF INSTEAD OF THE COMMENT
-$GIF_ID = "ICOgUNjpvO0PC"; // BzyTuYCmvSORqs1ABM
-$GIF_IFRAME_PATTERN = "<iframe src=\"https://giphy.com/embed/$GIF_ID\" width=\"480\" height=\"359\" frameBorder=\"0\" class=\"giphy-embed\" allowFullScreen></iframe>";
-
 // TODO: Transmit gif ids from the classes/functions that do requests to this function
 function send_gif_as_comment( $commentdata ) {
-   // NEEDS TO ADRESS A GLOBAL VARIABLE TO SEE IT
    global $GIF_IFRAME_PATTERN;
 
-   // TODO: Change if condition to button 'Send CatGif' pressed or smth
-   if (str_contains($commentdata['comment_content'], "cat") & (isset($_POST['catgif'])))
+   if (isset($_POST['catgif']))
    {
-      search_for_cat_gif($commentdata['comment_content']);
+      $img_src = search_for_cat_gif($commentdata['comment_content']);
+
+      $GIF_IFRAME_PATTERN = "<iframe src=\"$img_src\" width=\"480\" height=\"359\" frameBorder=\"0\" class=\"giphy-embed\" allowFullScreen></iframe>";
       $commentdata['comment_content'] = $GIF_IFRAME_PATTERN;
    }
    return $commentdata;
