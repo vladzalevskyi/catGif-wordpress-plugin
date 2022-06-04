@@ -61,7 +61,6 @@ register_deactivation_hook( __FILE__, 'deactivate_plugin_name' );
 
 require plugin_dir_path( __FILE__ ) . 'includes/class-catGif.php';
 
-
 // connect the public style
 function public_css(){
    // enqueue css script
