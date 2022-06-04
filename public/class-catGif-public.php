@@ -72,8 +72,8 @@ class Plugin_Name_Public {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/catGif-public.css', array(), $this->version, 'all' );
+		// enqueue all our scripts: css, js
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__) . 'public/css/catGif-public.css', array(), $this->version, 'all' );
 
 	}
 
@@ -95,9 +95,8 @@ class Plugin_Name_Public {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/catGif-public.js', array( 'jquery' ), $this->version, false );
-
+  		
 	}
 
 }

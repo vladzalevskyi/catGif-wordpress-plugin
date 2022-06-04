@@ -124,6 +124,8 @@ class Plugin_Name_Loader {
 			add_action( $hook['hook'], array( $hook['component'], $hook['callback'] ), $hook['priority'], $hook['accepted_args'] );
 		}
 
+		
+
 	}
 
 }

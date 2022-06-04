@@ -18,7 +18,7 @@
  * Plugin URI:        https://maiamaster.udg.edu/
  * Description:       This is a simple plugin to send cute cat gifs.
  * Version:           0.0.1
- * Author:            Your Name or Your Company
+ * Author:            team project
  * Author URI:        https://github.com
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
@@ -75,7 +75,8 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-catGif.php';
  * @since    1.0.0
  */
 
- // Allowing users to embed iframe objects in wordpress
+
+// Allowing users to embed iframe objects in wordpress
 global $allowedtags;
 $allowedtags["iframe"] = array(
    "src" => array(),
@@ -83,63 +84,92 @@ $allowedtags["iframe"] = array(
    "width" => array(),
    "frameBorder" => array(),
    "class" => array(),
-   
   );
 
+/**
+ * The code to connect the public style
+ */
+function public_css(){
+   // enqueue css script
+   wp_register_style( 'public-style', plugins_url('/public/css/catGif-public.css',__FILE__ ), false, '1.0.0', 'all' );
+   wp_enqueue_style( 'public-style' );
+}
 
+add_action('wp_enqueue_scripts', 'public_css');
 
-// DISPLAY SEND GIF BUTTON
-
-// TODO: Change func's logic to display "Send CatGif" button and link it to the gif
-// class that makes requests to giphy and retrieves gif ids and then passes it to another 
-// function below to display them
-
+/**
+ * The code display the send cat gif button
+ * and link it to the gif retrieve function and the css style
+ * 
+ */
 function add_send_cat_gif_button( $args ) {
+
    echo '<div class="form-submit">';
-   echo '<input name="catgif" type="submit" id="catgif" class="button button-primary" value="Send Cat Gif">';
+   echo '<input name="catgif" class="btn fourth" type="submit" id="catgif" value="Send Cat Gif">';
 	echo '</div>';
 }
 
 add_action( 'comment_form', 'add_send_cat_gif_button' );
 
-
+/**
+ * The code that call the api of giphy in the plugin
+ * 
+ * This using an Token of the Giphy API
+ * 
+ */
 function search_for_cat_gif( $comment_content ){
-   global $GIF_IFRAME_PATTERN;
 
-   # path to the clone repo 
-   
+   // path to the clone repo 
 	require_once plugin_dir_path( __FILE__ ) . 'giphy-php-client/vendor/autoload.php';
 
+   // creating api instance
    $api_instance = new GPH\Api\DefaultApi();
+
+   // api token 
    $API_KEY = 'AsTZs872SKSwgyevUPQWgadXgxJwYKWJ';
 
    
    try {    
-      $limit = 25; // int | The maximum number of records to return.
-      $offset = 0; // int | An optional results offset. Defaults to 0.
-      $rating = "g"; // string | Filters results by specified rating.
-      $lang = "en"; // string | Specify default country for regional content; use a 2-letter ISO 639-1 country code. See list of supported languages <a href = \"../language-support\">here</a>.
-      $fmt = "json"; // string | Used to indicate the expected response format. Default is Json.
+      // the maximum number of records to return.
+      $limit = 25;
+      // optional results offset. Defaults to 0.
+      $offset = 0; 
+      // filters results by specified rating.
+      $rating = "g";
+      // Specify default country for regional content; use a 2-letter ISO 639-1 country code. 
+      // See list of supported languages <a href = \"../language-support\">here</a>.
+      $lang = "en";
+      // indicate the expected response format. Default is Json.
+      $fmt = "json";
 
+      // cat to the search get with from giphy api client
       $result = $api_instance->gifsSearchGet($API_KEY, 'cat ' . $comment_content, $limit, $offset, $rating, $lang, $fmt);
+      // decode the result 
       $json_result = json_decode($result);
       
+      //returning the embed url
       return $json_result->data[0]->embed_url;
+
    } catch (Exception $e) {
          echo 'Exception when calling DefaultApi->gifsSearchGet: ', $e->getMessage(), PHP_EOL;
    }
 }
 
-// // SEND GIF INSTEAD OF THE COMMENT
-// TODO: Transmit gif ids from the classes/functions that do requests to this function
+/**
+ * The code that send a iframe with the gif 
+ * if the post request was submit by the cat gif button
+ */
 function send_gif_as_comment( $commentdata ) {
    global $GIF_IFRAME_PATTERN;
 
+   // if the post request is from the cat gif button
    if (isset($_POST['catgif']))
    {
+      // request the embed url to giphy api with the comment content info
       $img_src = search_for_cat_gif($commentdata['comment_content']);
 
-      $GIF_IFRAME_PATTERN = "<iframe src=\"$img_src\" width=\"480\" height=\"359\" frameBorder=\"0\" class=\"giphy-embed\" allowFullScreen></iframe>";
+      // set the url in an iframe
+      $GIF_IFRAME_PATTERN = "<iframe src=\"$img_src\" width=\"320\" height=\"200\" frameBorder=\"0\" class=\"giphy-embed\" allowFullScreen></iframe>";
       $commentdata['comment_content'] = $GIF_IFRAME_PATTERN;
    }
    return $commentdata;
@@ -147,7 +177,7 @@ function send_gif_as_comment( $commentdata ) {
 
 add_filter( 'preprocess_comment' , 'send_gif_as_comment' );
 
-// DISABLE WORDPRESS FLOOD FILTER TO BE ABLE TO POST MORE COMMENTS MORE FREQUENTLY
-// AND POST SAME COMMENTS
+// disable wordpress flood filter to post comments more frequently
 add_filter('comment_flood_filter', '__return_false');
+// post same comments posible
 add_filter('duplicate_comment_id', '__return_false');
