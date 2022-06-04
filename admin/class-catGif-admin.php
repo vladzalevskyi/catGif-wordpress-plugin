@@ -3,11 +3,11 @@
 /**
  * The admin-specific functionality of the plugin.
  *
- * @link       http://example.com
+ * @link       https://github.com/Vivikar/catGif-wordpress-plugin
  * @since      1.0.0
  *
- * @package    Plugin_Name
- * @subpackage Plugin_Name/admin
+ * @package    CatGif-Wordpress-Plugin
+ * @subpackage CatGif-Wordpress-Plugin/admin
  */
 
 /**
@@ -16,9 +16,9 @@
  * Defines the plugin name, version, and two examples hooks for how to
  * enqueue the admin-specific stylesheet and JavaScript.
  *
- * @package    Plugin_Name
- * @subpackage Plugin_Name/admin
- * @author     Your Name <email@example.com>
+ * @package    CatGif-Wordpress-Plugin
+ * @subpackage CatGif-Wordpress-Plugin/admin
+ * @author     team project
  */
 class Plugin_Name_Admin {
 

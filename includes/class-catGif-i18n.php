@@ -6,11 +6,11 @@
  * Loads and defines the internationalization files for this plugin
  * so that it is ready for translation.
  *
- * @link       http://example.com
+ * @link       https://github.com/Vivikar/catGif-wordpress-plugin
  * @since      1.0.0
  *
- * @package    Plugin_Name
- * @subpackage Plugin_Name/includes
+ * @package    CatGif-Wordpress-Plugin
+ * @subpackage CatGif-Wordpress-Plugin/includes
  */
 
 /**
@@ -20,9 +20,9 @@
  * so that it is ready for translation.
  *
  * @since      1.0.0
- * @package    Plugin_Name
- * @subpackage Plugin_Name/includes
- * @author     Your Name <email@example.com>
+ * @package    CatGif-Wordpress-Plugin
+ * @subpackage CatGif-Wordpress-Plugin/includes
+ * @author     team project
  */
 class Plugin_Name_i18n {
 

@@ -3,11 +3,11 @@
 /**
  * Fired during plugin deactivation
  *
- * @link       http://example.com
+ * @link       https://github.com/Vivikar/catGif-wordpress-plugin
  * @since      1.0.0
  *
- * @package    Plugin_Name
- * @subpackage Plugin_Name/includes
+ * @package    CatGif-Wordpress-Plugin
+ * @subpackage CatGif-Wordpress-Plugin/includes
  */
 
 /**
@@ -16,17 +16,15 @@
  * This class defines all code necessary to run during the plugin's deactivation.
  *
  * @since      1.0.0
- * @package    Plugin_Name
- * @subpackage Plugin_Name/includes
- * @author     Your Name <email@example.com>
+ * @package    CatGif-Wordpress-Plugin
+ * @subpackage CatGif-Wordpress-Plugin/includes
+ * @author     team project
  */
 class Plugin_Name_Deactivator {
 
 	/**
-	 * Short Description. (use period)
-	 *
-	 * Long Description.
-	 *
+	 * plugin deactivation
+	 * 
 	 * @since    1.0.0
 	 */
 	public static function deactivate() {

@@ -19,7 +19,7 @@
  * Description:       This is a simple plugin to send cute cat gifs.
  * Version:           0.0.1
  * Author:            team project
- * Author URI:        https://github.com
+ * Author URI:        https://github.com/Vivikar/catGif-wordpress-plugin
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       catGif
