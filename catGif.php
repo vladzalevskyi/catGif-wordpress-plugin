@@ -59,36 +59,9 @@ function deactivate_plugin_name() {
 register_activation_hook( __FILE__, 'activate_plugin_name' );
 register_deactivation_hook( __FILE__, 'deactivate_plugin_name' );
 
-/**
- * The core plugin class that is used to define internationalization,
- * admin-specific hooks, and public-facing site hooks.
- */
 require plugin_dir_path( __FILE__ ) . 'includes/class-catGif.php';
 
-/**
- * Begins execution of the plugin.
- *
- * Since everything within the plugin is registered via hooks,
- * then kicking off the plugin from this point in the file does
- * not affect the page life cycle.
- *
- * @since    1.0.0
- */
-
-
-// Allowing users to embed iframe objects in wordpress
-global $allowedtags;
-$allowedtags["iframe"] = array(
-   "src" => array(),
-   "height" => array(),
-   "width" => array(),
-   "frameBorder" => array(),
-   "class" => array(),
-  );
-
-/**
- * The code to connect the public style
- */
+// connect the public style
 function public_css(){
    // enqueue css script
    wp_register_style( 'public-style', plugins_url('/public/css/catGif-public.css',__FILE__ ), false, '1.0.0', 'all' );
@@ -97,38 +70,29 @@ function public_css(){
 
 add_action('wp_enqueue_scripts', 'public_css');
 
-/**
- * The code display the send cat gif button
- * and link it to the gif retrieve function and the css style
- * 
- */
+// Add send cat gif button 
 function add_send_cat_gif_button( $args ) {
-
    echo '<div class="form-submit">';
    echo '<input name="catgif" class="btn fourth" type="submit" id="catgif" value="Send Cat Gif">';
 	echo '</div>';
 }
 
+// Use add action to add the button when the page is laoded
 add_action( 'comment_form', 'add_send_cat_gif_button' );
 
-/**
- * The code that call the api of giphy in the plugin
- * 
- * This using an Token of the Giphy API
- * 
+/**  Using a Giphy API token create an API instance and do the 
+ *   search for the gif with the desired message
  */
 function search_for_cat_gif( $comment_content ){
-
-   // path to the clone repo 
+   // path to the cloned repo 
 	require_once plugin_dir_path( __FILE__ ) . 'giphy-php-client/vendor/autoload.php';
 
    // creating api instance
    $api_instance = new GPH\Api\DefaultApi();
 
-   // api token 
+   // api token
    $API_KEY = 'AsTZs872SKSwgyevUPQWgadXgxJwYKWJ';
 
-   
    try {    
       // the maximum number of records to return.
       $limit = 25;
@@ -148,19 +112,16 @@ function search_for_cat_gif( $comment_content ){
       $json_result = json_decode($result);
       
       //returning the embed url
-      return $json_result->data[0]->embed_url;
+      return $json_result->data[0]->images->original->url;
 
    } catch (Exception $e) {
          echo 'Exception when calling DefaultApi->gifsSearchGet: ', $e->getMessage(), PHP_EOL;
    }
 }
 
-/**
- * The code that send a iframe with the gif 
- * if the post request was submit by the cat gif button
- */
+// Send a cat gif if the post request was submit by the cat gif button
 function send_gif_as_comment( $commentdata ) {
-   global $GIF_IFRAME_PATTERN;
+   global $GIF;
 
    // if the post request is from the cat gif button
    if (isset($_POST['catgif']))
@@ -168,9 +129,11 @@ function send_gif_as_comment( $commentdata ) {
       // request the embed url to giphy api with the comment content info
       $img_src = search_for_cat_gif($commentdata['comment_content']);
 
-      // set the url in an iframe
-      $GIF_IFRAME_PATTERN = "<iframe src=\"$img_src\" width=\"320\" height=\"200\" frameBorder=\"0\" class=\"giphy-embed\" allowFullScreen></iframe>";
-      $commentdata['comment_content'] = $GIF_IFRAME_PATTERN;
+      // get the url of the gif and use it in an image element
+      $GIF = "<image src=\"$img_src\" width=\"50%\" height=\"50%\" frameBorder=\"0\" class=\"giphy-embed\">";
+      
+      // modify the content of the message and post
+      $commentdata['comment_content'] = $GIF;
    }
    return $commentdata;
 }
