@@ -20,7 +20,7 @@
  * @subpackage CatGif-Wordpress-Plugin/public
  * @author     team project
  */
-class Plugin_Name_Public {
+class catGif_Public {
 
 	/**
 	 * The ID of this plugin.
@@ -60,43 +60,110 @@ class Plugin_Name_Public {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Plugin_Name_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Plugin_Name_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
 		// enqueue all our scripts: css, js
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__) . 'public/css/catGif-public.css', array(), $this->version, 'all' );
+		wp_enqueue_style(
+			$this->plugin_name,
+			plugin_dir_url( __FILE__) . 'css/catGif-public.css',
+			false,
+			$this->version,
+			'all'
+		);
 
 	}
-
+	
 	/**
-	 * Register the JavaScript for the public-facing side of the site.
+	 * Simple return false to avoid some filterings
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_scripts() {
+	public function return_false(){
+		return false;
+	}
 
+	/**
+	 * Add the "Send Cat Gif button in the comment section
+	 *
+	 * @since    1.0.0
+	 */
+	public function add_send_cat_gif_button(){
 		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Plugin_Name_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Plugin_Name_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/catGif-public.js', array( 'jquery' ), $this->version, false );
-  		
+	 * Register the stylesheets for the public-facing side of the site.
+	 *
+	 * @since    1.0.0
+	 */
+		echo '<div class="form-submit">';
+		echo '<input name="catgif" class="btn fourth" type="submit" id="catgif" value="Send Cat Gif">';
+		echo '</div>';
+	}
+	
+	/**
+	 * Check if the comment was done with the send cat gif button and if so search for the propper gif.
+	 * Return the gif as an image element.
+	 *
+	 * @since    1.0.0
+	 * @param 	 $commentdata   Content of the comment post, array
+	 */
+	public function send_gif_as_comment( $commentdata ) {
+		// Send a cat gif if the post request was submitted by the cat gif button
+
+		global $GIF;
+		
+		// If the post request is from the cat gif button
+		if (isset($_POST['catgif']))   // Check that the post from catgif exists and is not null
+		{	
+			// Request a gif url to giphy api based on the comment content info
+			$img_src = $this->search_for_cat_gif($commentdata['comment_content']);
+
+			// Get the url of the gif and use it in an image element
+			$GIF = "<image src=\"$img_src\" width=\"50%\" height=\"50%\" frameBorder=\"0\" class=\"giphy-embed\">";
+			
+			// modify the content of the message and post
+			$commentdata['comment_content'] = $GIF;
+		}
+		return $commentdata;
+	}
+
+	/**
+	 * Add cat tag and do the search in giphy using their API
+	 *
+	 * @since    1.0.0
+	 * @param 	 $comment_content   Content of the posted comment, string
+	 */
+	private function search_for_cat_gif( $comment_content ){
+		require_once plugin_dir_path( __FILE__ ) . '../giphy-php-client/vendor/autoload.php';
+		
+		// Creating api instance 
+		$api_instance = new GPH\Api\DefaultApi();
+		
+		// Giphy API token (user) needed to use the API
+		$API_KEY = 'AsTZs872SKSwgyevUPQWgadXgxJwYKWJ';
+		
+		try {
+			// the maximum number of records to return.
+			$limit = 25;
+			// optional results offset. Defaults to 0.
+			$offset = 0; 
+			// filters results by specified rating.
+			$rating = "g";
+			// Specify default country for regional content; use a 2-letter ISO 639-1 country code. 
+			// See list of supported languages <a href = \"../language-support\">here</a>.
+			$lang = "en";
+			// indicate the expected response format. Default is Json.
+			$fmt = "json";
+		
+			// Add cat keyword and do a search get with from giphy api client
+			$result = $api_instance->gifsSearchGet(
+				$API_KEY, 'cat ' . $comment_content, $limit, $offset, $rating, $lang, $fmt);
+			
+			// Decode the response
+			$json_result = json_decode($result);
+			
+			// Return the gif url
+			return $json_result->data[0]->images->original->url;
+		
+		} catch (Exception $e) {
+					echo 'Exception when calling DefaultApi->gifsSearchGet: ', $e->getMessage(), PHP_EOL;
+		}
 	}
 
 }

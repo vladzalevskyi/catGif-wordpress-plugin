@@ -1,8 +1,8 @@
 # catGif-wordpress-plugin
 Plugin that allows users to send cat gifs as comments.
 
-Allows users to send a cat gif that corresponds to a given comment in a blog.
-
+When the user post their comment with the "Send Cat Gif" the pluging searches in giphy for
+a cat gift and the content of the comment.
 ## Usage
 
 Put the plugin repo folder in your `/opt/lampp/htdocs/wordpress/wp-content/plugins/` directory and activate in your WordPress Plugin settings.

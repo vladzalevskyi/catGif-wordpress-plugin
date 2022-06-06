@@ -3,9 +3,6 @@
 /**
  * The file that defines the core plugin class
  *
- * A class definition that includes attributes and functions used across both the
- * public-facing side of the site and the admin area.
- *
  * @link       https://github.com/Vivikar/catGif-wordpress-plugin
  * @since      1.0.0
  *
@@ -16,18 +13,12 @@
 /**
  * The core plugin class.
  *
- * This is used to define internationalization, admin-specific hooks, and
- * public-facing site hooks.
- *
- * Also maintains the unique identifier of this plugin as well as the current
- * version of the plugin.
- *
  * @since      1.0.0
  * @package    CatGif-Wordpress-Plugin
  * @subpackage CatGif-Wordpress-Plugin/includes
  * @author     Your Name <email@example.com>
  */
-class Plugin_Name {
+class CatGifPlugin {
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
@@ -58,15 +49,16 @@ class Plugin_Name {
 	protected $version;
 
 	/**
-	 * Define the core functionality of the plugin.
+	 * The catGifPluging adds a button in the comments section that allows the users
+	 * to send cat gifs related to the comment they have written.
 	 *
 	 * Set the plugin name and the plugin version that can be used throughout the plugin.
-	 * Load the dependencies, define the locale, and set the hooks for the admin area and
-	 * the public-facing side of the site.
+	 * Load the dependencies, and set the hooks the public-facing side of the site.
 	 *
 	 * @since    1.0.0
 	 */
-	public function __construct() {
+
+	public function __construct(){
 		if ( defined( 'PLUGIN_NAME_VERSION' ) ) {
 			$this->version = PLUGIN_NAME_VERSION;
 		} else {
@@ -75,10 +67,7 @@ class Plugin_Name {
 		$this->plugin_name = 'catGif';
 
 		$this->load_dependencies();
-		$this->set_locale();
-		$this->define_admin_hooks();
 		$this->define_public_hooks();
-
 	}
 
 	/**
@@ -86,10 +75,8 @@ class Plugin_Name {
 	 *
 	 * Include the following files that make up the plugin:
 	 *
-	 * - Plugin_Name_Loader. Orchestrates the hooks of the plugin.
-	 * - Plugin_Name_i18n. Defines internationalization functionality.
-	 * - Plugin_Name_Admin. Defines all hooks for the admin area.
-	 * - Plugin_Name_Public. Defines all hooks for the public side of the site.
+	 * - catGif_Loader. Orchestrates the hooks of the plugin.
+	 * - catGif_Public. Defines all hooks for the public side of the site.
 	 *
 	 * Create an instance of the loader which will be used to register the hooks
 	 * with WordPress.
@@ -106,56 +93,12 @@ class Plugin_Name {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-catGif-loader.php';
 
 		/**
-		 * The class responsible for defining internationalization functionality
-		 * of the plugin.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-catGif-i18n.php';
-
-		/**
-		 * The class responsible for defining all actions that occur in the admin area.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-catGif-admin.php';
-
-		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-catGif-public.php';
 
-		$this->loader = new Plugin_Name_Loader();
-
-	}
-
-	/**
-	 * Define the locale for this plugin for internationalization.
-	 *
-	 * Uses the Plugin_Name_i18n class in order to set the domain and to register the hook
-	 * with WordPress.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	private function set_locale() {
-
-		$plugin_i18n = new Plugin_Name_i18n();
-
-		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
-
-	}
-
-	/**
-	 * Register all of the hooks related to the admin area functionality
-	 * of the plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	private function define_admin_hooks() {
-
-		$plugin_admin = new Plugin_Name_Admin( $this->get_plugin_name(), $this->get_version() );
-
-		$this->loader->add_action( 'admin_enqueue_styles', $plugin_admin, 'enqueue_styles' );
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		$this->loader = new catGif_Loader();
 
 	}
 
@@ -168,11 +111,22 @@ class Plugin_Name {
 	 */
 	private function define_public_hooks() {
 
-		$plugin_public = new Plugin_Name_Public( $this->get_plugin_name(), $this->get_version() );
-
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
-
+		$plugin_public = new catGif_Public( $this->get_plugin_name(), $this->get_version() );
+		
+		// Add our style to the button
+		$this->loader->add_action( "wp_enqueue_scripts", $plugin_public, 'enqueue_styles');
+		
+		// Create cat gif button
+		$this->loader->add_action( "comment_form", $plugin_public, "add_send_cat_gif_button");
+		
+		// Search for the gif with the desired message using giphy API
+		$this->loader->add_filter( "preprocess_comment", $plugin_public, "send_gif_as_comment");
+		
+		// Disable wordpress flood filter to post comments more frequently
+		$this->loader->add_filter( "comment_flood_filter", $plugin_public, "return_false");
+		
+		// Allow posting of same comments
+		$this->loader->add_filter( "duplicate_comment_id", $plugin_public, "return_false");
 	}
 
 	/**
@@ -199,7 +153,7 @@ class Plugin_Name {
 	 * The reference to the class that orchestrates the hooks with the plugin.
 	 *
 	 * @since     1.0.0
-	 * @return    Plugin_Name_Loader    Orchestrates the hooks of the plugin.
+	 * @return    catGif_Loader    Orchestrates the hooks of the plugin.
 	 */
 	public function get_loader() {
 		return $this->loader;
@@ -214,5 +168,4 @@ class Plugin_Name {
 	public function get_version() {
 		return $this->version;
 	}
-
-}
+ }

@@ -20,7 +20,7 @@
  * @subpackage CatGif-Wordpress-Plugin/includes
  * @author     team-project
  */
-class Plugin_Name_Activator {
+class catGif_Activator {
 
 	/**
 	 * plugin activation function
