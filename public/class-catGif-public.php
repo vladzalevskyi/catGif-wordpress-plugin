@@ -105,6 +105,14 @@ class catGif_Public {
 	 */
 	public function send_gif_as_comment( $commentdata ) {
 		// Send a cat gif if the post request was submitted by the cat gif button
+		global $allowedtags;
+		$allowedtags["image"] = array(
+		"src" => array(),
+		"height" => array(),
+		"width" => array(),
+		"frameBorder" => array(),
+		"class" => array(),
+		);
 
 		global $GIF;
 		
