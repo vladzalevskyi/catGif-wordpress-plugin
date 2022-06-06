@@ -20,7 +20,7 @@
  * @subpackage CatGif-Wordpress-Plugin/includes
  * @author     team project
  */
-class Plugin_Name_Deactivator {
+class catGif_Deactivator {
 
 	/**
 	 * plugin deactivation
