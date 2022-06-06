@@ -3,11 +3,11 @@
 /**
  * The public-facing functionality of the plugin.
  *
- * @link       http://example.com
+ * @link       https://github.com/Vivikar/catGif-wordpress-plugin
  * @since      1.0.0
  *
- * @package    Plugin_Name
- * @subpackage Plugin_Name/public
+ * @package    CatGif-Wordpress-Plugin
+ * @subpackage CatGif-Wordpress-Plugin/public
  */
 
 /**
@@ -16,9 +16,9 @@
  * Defines the plugin name, version, and two examples hooks for how to
  * enqueue the public-facing stylesheet and JavaScript.
  *
- * @package    Plugin_Name
- * @subpackage Plugin_Name/public
- * @author     Your Name <email@example.com>
+ * @package    CatGif-Wordpress-Plugin
+ * @subpackage CatGif-Wordpress-Plugin/public
+ * @author     team project
  */
 class Plugin_Name_Public {
 
@@ -72,8 +72,8 @@ class Plugin_Name_Public {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/catGif-public.css', array(), $this->version, 'all' );
+		// enqueue all our scripts: css, js
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__) . 'public/css/catGif-public.css', array(), $this->version, 'all' );
 
 	}
 
@@ -95,9 +95,8 @@ class Plugin_Name_Public {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/catGif-public.js', array( 'jquery' ), $this->version, false );
-
+  		
 	}
 
 }

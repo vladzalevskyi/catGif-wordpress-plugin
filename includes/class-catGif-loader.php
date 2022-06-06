@@ -3,11 +3,11 @@
 /**
  * Register all actions and filters for the plugin
  *
- * @link       http://example.com
+ * @link       https://github.com/Vivikar/catGif-wordpress-plugin
  * @since      1.0.0
  *
- * @package    Plugin_Name
- * @subpackage Plugin_Name/includes
+ * @package    CatGif-Wordpress-Plugin
+ * @subpackage CatGif-Wordpress-Plugin/includes
  */
 
 /**
@@ -17,9 +17,9 @@
  * the plugin, and register them with the WordPress API. Call the
  * run function to execute the list of actions and filters.
  *
- * @package    Plugin_Name
- * @subpackage Plugin_Name/includes
- * @author     Your Name <email@example.com>
+ * @package    CatGif-Wordpress-Plugin
+ * @subpackage CatGif-Wordpress-Plugin/includes
+ * @author     team project
  */
 class Plugin_Name_Loader {
 
@@ -123,6 +123,8 @@ class Plugin_Name_Loader {
 		foreach ( $this->actions as $hook ) {
 			add_action( $hook['hook'], array( $hook['component'], $hook['callback'] ), $hook['priority'], $hook['accepted_args'] );
 		}
+
+		
 
 	}
 
